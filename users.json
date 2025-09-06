@@ -1,0 +1,18 @@
+[
+  {
+    "username": "user2@example.com",
+    "password": "securePass456!"
+  },
+  {
+    "username": "dog",
+    "password": "cat"
+  },
+  {
+    "username": "test",
+    "password": "user"
+  },
+  {
+    "username": "bad",
+    "password": "bad"
+  }
+]
