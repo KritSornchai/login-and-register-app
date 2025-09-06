@@ -13,7 +13,7 @@ app.use(express.json());
 // 2. API ROUTES
 // ======================================================
 
-// --- REGULAR USER API ROUTES (FULLY IMPLEMENTED) ---
+// --- REGULAR USER API ROUTES ---
 
 app.post('/register', (req, res) => {
     const { username, password } = req.body;
@@ -42,7 +42,7 @@ app.post('/login', (req, res) => {
     });
 });
 
-// --- ADMIN API ROUTES (FULLY IMPLEMENTED) ---
+// --- ADMIN API ROUTES ---
 
 const ADMIN_USER = { username: 'admin', password: 'adminpassword' };
 let isAdminAuthenticated = false;
@@ -71,7 +71,6 @@ function requireAdmin(req, res, next) {
     }
 }
 
-// GET all users (Read)
 app.get('/api/users', requireAdmin, (req, res) => {
     const usersFilePath = path.join(__dirname, 'users.json');
     fs.readFile(usersFilePath, 'utf8', (err, data) => {
@@ -82,7 +81,6 @@ app.get('/api/users', requireAdmin, (req, res) => {
     });
 });
 
-// DELETE a user
 app.delete('/api/users/:username', requireAdmin, (req, res) => {
     const { username } = req.params;
     const usersFilePath = path.join(__dirname, 'users.json');
@@ -98,7 +96,6 @@ app.delete('/api/users/:username', requireAdmin, (req, res) => {
     });
 });
 
-// UPDATE a user's password
 app.put('/api/users/:username', requireAdmin, (req, res) => {
     const { username } = req.params;
     const { newPassword } = req.body;
@@ -117,14 +114,29 @@ app.put('/api/users/:username', requireAdmin, (req, res) => {
 });
 
 // ======================================================
-// 3. STATIC FILE SERVING
+// 3. PAGE SERVING ROUTES
 // ======================================================
+
+// NEW: Route for clean admin URL. This must come BEFORE app.use(express.static).
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+// This ensures that visiting the root URL serves the main page.
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// ======================================================
+// 4. STATIC FILE SERVING
+// ======================================================
+// Serves general files like style.css and script.js
 app.use(express.static(__dirname));
 
 // ======================================================
-// 4. SERVER INITIALIZATION
+// 5. SERVER INITIALIZATION
 // ======================================================
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
-    console.log(`Admin dashboard at http://localhost:${port}/admin.html`);
+    console.log(`Admin dashboard at http://localhost:${port}/admin`); // Updated log message
 });

@@ -62,5 +62,9 @@
   {
     "username": "wrong",
     "password": "right"
+  },
+  {
+    "username": "udamy",
+    "password": "pryn"
   }
 ]
