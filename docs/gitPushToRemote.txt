@@ -1,0 +1,99 @@
+Perfect! Here’s a **one-page Quick Reference Checklist** you can keep handy for any future GitHub 403 headaches on macOS:
+
+---
+
+# GitHub 403 Quick Fix Checklist (macOS)
+
+### Symptom
+
+```text
+remote: Permission denied to <repo>.git
+fatal: unable to access 'https://github.com/...': The requested URL returned error: 403
+```
+
+GitHub thinks you’re the wrong user.
+
+---
+
+### Step 1: Check Git identity
+
+```bash
+git config --get user.name
+git config --get user.email
+```
+
+✅ Should match your GitHub account.
+
+**If wrong:**
+
+```bash
+git config --global user.name "YourGitHubUsername"
+git config --global user.email "YourGitHubEmail"
+```
+
+---
+
+### Step 2: Reset the remote (optional, if repo URL changed)
+
+```bash
+git remote remove origin
+git remote add origin https://github.com/YourGitHubUsername/YourRepo.git
+```
+
+---
+
+### Step 3: Delete cached credentials (Keychain)
+
+1. Open **Keychain Access** (`Cmd + Space` → type *Keychain Access*).
+2. Search `github.com`.
+3. Look for entries like:
+
+   * `Github – https://api.github.com` → usually correct.
+   * `github.com – Internet password` → often the culprit.
+4. Delete the wrong one(s) (especially the old username).
+
+> Deleting forces Git to ask for login again.
+
+---
+
+### Step 4: Push with correct credentials
+
+```bash
+git push origin master
+```
+
+* **Username:** your GitHub username
+* **Password:** Personal Access Token (PAT)
+
+macOS Keychain will save the new credential automatically.
+
+---
+
+### Step 5: Create a Personal Access Token (PAT) (if needed)
+
+1. Go to [GitHub → Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens).
+2. Click **Generate new token (classic)**.
+3. Give it a note (e.g., “MacBook Git Push”), set expiration.
+4. Select **repo** scope.
+5. Generate → copy token.
+6. Use it as **password** when prompted during push.
+
+---
+
+### ✅ Optional tips
+
+* Switch to SSH to avoid repeated HTTPS login issues:
+
+```bash
+git remote set-url origin git@github.com:YourGitHubUsername/YourRepo.git
+```
+
+* Always confirm which Keychain entry is tied to the wrong account before deleting.
+
+---
+
+This checklist basically compresses your entire fix into a **“follow these steps if 403 appears”** guide.
+
+If you want, I can also make a **tiny flowchart version** — visually showing: *403 error → check identity → clear Keychain → PAT → push* — super quick to reference.
+
+Do you want me to make that visual flowchart too?

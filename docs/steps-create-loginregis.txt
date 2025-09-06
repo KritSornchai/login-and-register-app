@@ -1,0 +1,23 @@
+Steps that I used to create login/register form:
+I used “Context Engineering”
+
+Step 0:  so called first prompt
+I first wrote a draft of my objective about how the web app should look, its functionalities
+Step 1: used ai to reshape the prompt
+I used ai to reshape my first draft to make it the standard second draft. Ex: 
+Use standard practices inside the prompt
+Step 2: get to work
+Use the ai created prompt and tell it to create the login and register web app
+Step 3: follow ai steps
+Create files according to what ai tells us
+Step 4. Working login and register forms
+Once the web application worked we can proceed to step 5.
+Step 5:
+Reverse engineer the files and directories created by the ai. We can use ai to help reverse engineer too
+Step 6: craft a simpler way to clone this Web app
+Make it simple for even others to exactly copy and paste this web application in a few steps
+Step 7.
+Once others can do it, explain how it all works,
+
+
+

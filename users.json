@@ -14,5 +14,9 @@
   {
     "username": "bad",
     "password": "bad"
+  },
+  {
+    "username": "try",
+    "password": "this"
   }
 ]

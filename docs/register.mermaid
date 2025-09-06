@@ -1,0 +1,22 @@
+sequenceDiagram
+    participant User
+    participant Browser (Frontend)
+    participant Server (Backend)
+
+    User->>Browser (Frontend): 1. Fills in registration form (username, password)
+    User->>Browser (Frontend): 2. Clicks "Register" button
+
+    Browser (Frontend)->>Server (Backend): 3. Sends POST request to /register with user data
+
+    Server (Backend)->>Server (Backend): 4. Receives data and reads users.json file
+    Server (Backend)->>Server (Backend): 5. Checks if username already exists
+
+    alt Username is already taken
+        Server (Backend)-->>Browser (Frontend): 6a. Sends ERROR response (e.g., status 400)
+        Browser (Frontend)->>User: 7a. Displays "Username already exists" message
+    else Username is new
+        Server (Backend)->>Server (Backend): 6b. Adds new user to the list in memory
+        Server (Backend)->>Server (Backend): 7b. Writes the updated list back to users.json file
+        Server (Backend)-->>Browser (Frontend): 8b. Sends SUCCESS response (e.g., status 200)
+        Browser (Frontend)->>User: 9b. Displays "User registered successfully" message
+    end
