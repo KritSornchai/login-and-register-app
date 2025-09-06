@@ -1,0 +1,20 @@
+sequenceDiagram
+    participant User
+    participant Browser (Frontend)
+    participant Server (Backend)
+
+    User->>Browser (Frontend): 1. Fills in login form (username, password)
+    User->>Browser (Frontend): 2. Clicks "Login" button
+
+    Browser (Frontend)->>Server (Backend): 3. Sends POST request to /login with user data
+
+    Server (Backend)->>Server (Backend): 4. Receives data and reads users.json file
+    Server (Backend)->>Server (Backend): 5. Searches for a user with matching username AND password
+
+    alt Credentials are valid
+        Server (Backend)-->>Browser (Frontend): 6a. Sends SUCCESS response (e.g., status 200)
+        Browser (Frontend)->>User: 7a. Displays "Login successful" message
+    else Credentials are not valid
+        Server (Backend)-->>Browser (Frontend): 6b. Sends ERROR response (e.g., status 400)
+        Browser (Frontend)->>User: 7b. Displays "Invalid username or password" message
+    end
