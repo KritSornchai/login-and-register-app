@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Additional styles for the admin page */
+        #admin-dashboard { display: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .action-button { margin-right: 5px; cursor: pointer; padding: 5px 10px; border-radius: 3px; border: none; color: white; }
+        .delete-btn { background-color: #dc3545; }
+        .edit-btn { background-color: #007bff; }
+        #logout-btn { margin-top: 20px; background-color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div id="feedback-container"></div>
+
+    <!-- Admin Login Section -->
+    <div id="admin-login-container" class="form-container">
+        <h2>Admin Login</h2>
+        <form id="admin-login-form">
+            <input type="text" id="admin-username" placeholder="Admin Username" required>
+            <input type="password" id="admin-password" placeholder="Admin Password" required>
+            <button type="submit">Login as Admin</button>
+        </form>
+    </div>
+
+    <!-- Admin Dashboard Section (hidden by default) -->
+    <div id="admin-dashboard" class="form-container" style="display: none;">
+        <h2>User Management</h2>
+        <table id="user-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="user-table-body">
+                <!-- User rows will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+        <button id="logout-btn" class="action-button">Logout</button>
+    </div>
+
+    <script src="script.js"></script> <!-- Re-using the feedback function -->
+    <script src="admin.js"></script>
+</body>
+</html>
