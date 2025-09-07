@@ -69,7 +69,7 @@ app.post('/login', async (req, res) => {
 });
 
 // --- ADMIN API ROUTES ---
-const ADMIN_USER = { username: 'admin', password: 'adminpassword' };
+const ADMIN_USER = { username: 'admin', password: 'mypassword' };
 
 // UPDATED: Admin Login with a debugging console.log
 app.post('/admin/login', (req, res) => {
