@@ -1,70 +1,14 @@
 [
   {
+    "username": "tom",
+    "password": "hanks"
+  },
+  {
+    "username": "ratchatapann@gmail.com",
+    "password": "ghjkl;"
+  },
+  {
     "username": "user2@example.com",
     "password": "securePass456!"
-  },
-  {
-    "username": "dog",
-    "password": "dog"
-  },
-  {
-    "username": "test",
-    "password": "user"
-  },
-  {
-    "username": "bad",
-    "password": "bad"
-  },
-  {
-    "username": "try",
-    "password": "this"
-  },
-  {
-    "username": "dad",
-    "password": "th"
-  },
-  {
-    "username": "dan",
-    "password": "ny"
-  },
-  {
-    "username": "naaa",
-    "password": "naaa"
-  },
-  {
-    "username": "aa",
-    "password": "aaaa"
-  },
-  {
-    "username": "apples",
-    "password": "oranges"
-  },
-  {
-    "username": "want",
-    "password": "thisss"
-  },
-  {
-    "username": "123",
-    "password": "123"
-  },
-  {
-    "username": "ballllll",
-    "password": "hogriderr"
-  },
-  {
-    "username": "john",
-    "password": "doe"
-  },
-  {
-    "username": "admin",
-    "password": "adminpassword"
-  },
-  {
-    "username": "wrong",
-    "password": "right"
-  },
-  {
-    "username": "udamy",
-    "password": "pryn"
   }
 ]
