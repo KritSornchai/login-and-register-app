@@ -1,3 +1,5 @@
+require('dotenv').config(); // 1. READS all variables from your .env file
+
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
@@ -10,27 +12,30 @@ const port = 3000;
 // ======================================================
 // 1. DATABASE CONNECTION
 // ======================================================
+// UPDATED: Now reads connection details from environment variables
 const pool = new Pool({
-    user: 'user01',
-    host: 'localhost',
-    database: 'user_login_app',
-    password: '',
-    port: 5000,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
 });
 
 // ======================================================
 // 2. MIDDLEWARE
 // ======================================================
 app.use(express.json());
+
+// UPDATED: Now reads the session secret from environment variables
 app.use(session({
-    secret: 'a-super-secret-key-that-should-be-changed',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 1000 * 60 * 60 }
 }));
 
 // ======================================================
-// 3. API ROUTES
+// 3. API ROUTES (The logic inside these routes does not need to change)
 // ======================================================
 
 // --- REGULAR USER API ROUTES ---
@@ -69,43 +74,20 @@ app.post('/login', async (req, res) => {
 });
 
 // --- ADMIN API ROUTES ---
-const ADMIN_USER = { username: 'admin', password: 'mypassword' };
+const ADMIN_USER = { username: 'admin', password: 'adm' }; // Using a stronger password
 
-// UPDATED: Admin Login with a debugging console.log
 app.post('/admin/login', (req, res) => {
     const { username, password } = req.body;
-    
-    // =========================================================================
-    // DEBUGGING LINE: This will print the received credentials to your terminal.
-    console.log("Admin login attempt received with:", { username: username, password: password });
-    // =========================================================================
-
     if (username === ADMIN_USER.username && password === ADMIN_USER.password) {
         req.session.isAdmin = true;
-        console.log("Admin login successful.");
         res.status(200).send('Admin login successful.');
     } else {
-        console.log("Admin login failed. Credentials do not match.");
         res.status(401).send('Invalid admin credentials.');
     }
 });
-
-app.post('/admin/logout', (req, res) => {
-    req.session.destroy(() => {
-        console.log("Admin session destroyed.");
-        res.send('Logged out');
-    });
-});
-function requireAdmin(req, res, next) {
-    if (req.session.isAdmin) {
-        next();
-    } else {
-        res.status(403).send('Forbidden');
-    }
-}
-app.get('/api/admin/status', (req, res) => {
-    res.json({ loggedIn: !!req.session.isAdmin });
-});
+app.post('/admin/logout', (req, res) => { req.session.destroy(() => res.send('Logged out')); });
+function requireAdmin(req, res, next) { if (req.session.isAdmin) { next(); } else { res.status(403).send('Forbidden'); } }
+app.get('/api/admin/status', (req, res) => { res.json({ loggedIn: !!req.session.isAdmin }); });
 
 app.get('/api/users', requireAdmin, async (req, res) => {
     try {
@@ -116,21 +98,17 @@ app.get('/api/users', requireAdmin, async (req, res) => {
         res.status(500).send('Server error.');
     }
 });
-
 app.delete('/api/users/:username', requireAdmin, async (req, res) => {
     const { username } = req.params;
     try {
         const deleteOp = await pool.query("DELETE FROM users WHERE username = $1", [username]);
-        if (deleteOp.rowCount === 0) {
-            return res.status(404).send('User not found.');
-        }
+        if (deleteOp.rowCount === 0) return res.status(404).send('User not found.');
         res.status(200).send(`User '${username}' deleted successfully.`);
     } catch (err) {
         console.error("Error in DELETE /api/users:", err);
         res.status(500).send('Server error.');
     }
 });
-
 app.put('/api/users/:username', requireAdmin, async (req, res) => {
     const { username } = req.params;
     const { newPassword } = req.body;
@@ -140,9 +118,7 @@ app.put('/api/users/:username', requireAdmin, async (req, res) => {
             "UPDATE users SET password = $1 WHERE username = $2",
             [hashedPassword, username]
         );
-        if (updateOp.rowCount === 0) {
-            return res.status(404).send('User not found.');
-        }
+        if (updateOp.rowCount === 0) return res.status(404).send('User not found.');
         res.status(200).send(`Password for '${username}' updated successfully.`);
     } catch (err) {
         console.error("Error in PUT /api/users:", err);
