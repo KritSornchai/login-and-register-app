@@ -1,46 +1,14 @@
 [
   {
-    "username": "dog",
-    "password": "dog"
+    "username": "tom",
+    "password": "$2b$10$PXHB0AHb.BcDkMk/q5YpNe7NbyxjPYUVrkG9zUgIDATXoW7nhDt/G"
   },
   {
-    "username": "ratchatapann@gmail.com",
-    "password": "ghjkl;"
+    "username": "pryn",
+    "password": "$2b$10$XyyHNJMng5xQI973U1CZJeUK1RXsNTlzHhx3txrT5xwL6PX14IjRm"
   },
   {
-    "username": "want",
-    "password": "thisss"
-  },
-  {
-    "username": "123",
-    "password": "123"
-  },
-  {
-    "username": "ballllll",
-    "password": "hogriderr"
-  },
-  {
-    "username": "john",
-    "password": "doe"
-  },
-  {
-    "username": "admin",
-    "password": "adminpassword"
-  },
-  {
-    "username": "wrong",
-    "password": "right"
-  },
-  {
-    "username": "udamy",
-    "password": "pryn"
-  },
-  {
-    "username": "timothy",
-    "password": "timothy"
-  },
-  {
-    "username": "stacy",
-    "password": "stacy"
+    "username": "pann",
+    "password": "$2b$10$DqsoAdVnaky2mfRdN0ZDEemYHNcnYOndMYekceuZ0zfXLcuJfpc4i"
   }
 ]
