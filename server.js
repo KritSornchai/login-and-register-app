@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const session = require('express-session'); // IMPORT the session package
 const app = express();
 const port = 3000;
 
@@ -9,11 +10,19 @@ const port = 3000;
 // ======================================================
 app.use(express.json());
 
+// ADD AND CONFIGURE THE SESSION MIDDLEWARE
+app.use(session({
+    secret: 'a-super-secret-key-for-your-app', // Used to secure the session cookie
+    resave: false,
+    saveUninitialized: false, // Only create a session when a user logs in
+    cookie: { maxAge: 1000 * 60 * 60 } // Cookie lasts for 1 hour
+}));
+
 // ======================================================
 // 2. API ROUTES
 // ======================================================
 
-// --- REGULAR USER API ROUTES ---
+// --- REGULAR USER API ROUTES (Unchanged) ---
 
 app.post('/register', (req, res) => {
     const { username, password } = req.body;
@@ -42,35 +51,51 @@ app.post('/login', (req, res) => {
     });
 });
 
-// --- ADMIN API ROUTES ---
+// --- ADMIN API ROUTES (Updated to use sessions) ---
 
 const ADMIN_USER = { username: 'admin', password: 'adminpassword' };
-let isAdminAuthenticated = false;
+// let isAdminAuthenticated = false; // REMOVED: The session handles this now.
 
+// UPDATED: Admin Login
 app.post('/admin/login', (req, res) => {
     const { username, password } = req.body;
     if (username === ADMIN_USER.username && password === ADMIN_USER.password) {
-        isAdminAuthenticated = true;
+        // SET SESSION DATA: This is how the server "remembers" the user.
+        req.session.isAdmin = true;
         res.status(200).send('Admin login successful.');
     } else {
-        isAdminAuthenticated = false;
         res.status(401).send('Invalid admin credentials.');
     }
 });
 
+// UPDATED: Admin Logout
 app.post('/admin/logout', (req, res) => {
-    isAdminAuthenticated = false;
-    res.status(200).send('Admin logged out successfully.');
+    // DESTROY SESSION: Securely logs the user out.
+    req.session.destroy(err => {
+        if (err) return res.status(500).send('Could not log out.');
+        res.status(200).send('Admin logged out successfully.');
+    });
 });
 
+// UPDATED: Security Middleware checks the session
 function requireAdmin(req, res, next) {
-    if (isAdminAuthenticated) {
-        next();
+    if (req.session.isAdmin) {
+        next(); // User is an admin, proceed.
     } else {
         res.status(403).send('Forbidden: Admin access required.');
     }
 }
 
+// NEW: A route for the frontend to check if a session is active
+app.get('/api/admin/status', (req, res) => {
+    if (req.session.isAdmin) {
+        res.status(200).json({ loggedIn: true });
+    } else {
+        res.status(401).json({ loggedIn: false });
+    }
+});
+
+// These routes are now protected by the session-aware middleware
 app.get('/api/users', requireAdmin, (req, res) => {
     const usersFilePath = path.join(__dirname, 'users.json');
     fs.readFile(usersFilePath, 'utf8', (err, data) => {
@@ -114,29 +139,20 @@ app.put('/api/users/:username', requireAdmin, (req, res) => {
 });
 
 // ======================================================
-// 3. PAGE SERVING ROUTES
+// 3. PAGE SERVING & STATIC FILES
 // ======================================================
-
-// NEW: Route for clean admin URL. This must come BEFORE app.use(express.static).
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
-
-// This ensures that visiting the root URL serves the main page.
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
-
-// ======================================================
-// 4. STATIC FILE SERVING
-// ======================================================
-// Serves general files like style.css and script.js
 app.use(express.static(__dirname));
 
 // ======================================================
-// 5. SERVER INITIALIZATION
+// 4. SERVER INITIALIZATION
 // ======================================================
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
-    console.log(`Admin dashboard at http://localhost:${port}/admin`); // Updated log message
+    console.log(`Admin dashboard at http://localhost:${port}/admin`);
 });

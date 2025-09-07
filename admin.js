@@ -5,6 +5,22 @@ const loginForm = document.getElementById('admin-login-form');
 const userTableBody = document.getElementById('user-table-body');
 const logoutBtn = document.getElementById('logout-btn');
 
+// --- NEW FEATURE: Check login status when the page first loads ---
+window.addEventListener('DOMContentLoaded', async () => {
+    const response = await fetch('/api/admin/status');
+    if (response.ok) {
+        // If the server confirms we have a valid session, show the dashboard.
+        loginContainer.style.display = 'none';
+        dashboardContainer.style.display = 'block';
+        fetchAndDisplayUsers();
+    } else {
+        // If we don't have a session, show the login form (which is the default).
+        loginContainer.style.display = 'block';
+        dashboardContainer.style.display = 'none';
+    }
+});
+// ----------------------------------------------------
+
 // Handle Admin Login
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -36,7 +52,7 @@ logoutBtn.addEventListener('click', async () => {
 
 // Function to fetch and display all users
 async function fetchAndDisplayUsers() {
-    const response = await fetch('/api/users', { cache: 'no-cache' }); // Keep cache fix
+    const response = await fetch('/api/users', { cache: 'no-cache' });
     if (!response.ok) {
         showFeedback('Failed to fetch users. You may not be logged in.', false);
         return;
@@ -46,7 +62,6 @@ async function fetchAndDisplayUsers() {
 
     users.forEach(user => {
         const row = document.createElement('tr');
-        // RESTORED: Add the actual buttons back
         row.innerHTML = `
             <td>${user.username}</td>
             <td>
@@ -56,7 +71,6 @@ async function fetchAndDisplayUsers() {
         `;
         userTableBody.appendChild(row);
 
-        // RESTORED: Add event listeners for the new buttons
         row.querySelector('.edit-btn').addEventListener('click', () => updateUserPassword(user.username));
         row.querySelector('.delete-btn').addEventListener('click', () => deleteUser(user.username));
     });
@@ -89,6 +103,6 @@ async function deleteUser(username) {
     const message = await response.text();
     showFeedback(message, response.ok);
     if (response.ok) {
-        fetchAndDisplayUsers(); // Refresh the user list
+        fetchAndDisplayUsers();
     }
 }

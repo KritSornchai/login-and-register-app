@@ -1,14 +1,46 @@
 [
   {
-    "username": "tom",
-    "password": "hanks"
+    "username": "dog",
+    "password": "dog"
   },
   {
     "username": "ratchatapann@gmail.com",
     "password": "ghjkl;"
   },
   {
-    "username": "user2@example.com",
-    "password": "securePass456!"
+    "username": "want",
+    "password": "thisss"
+  },
+  {
+    "username": "123",
+    "password": "123"
+  },
+  {
+    "username": "ballllll",
+    "password": "hogriderr"
+  },
+  {
+    "username": "john",
+    "password": "doe"
+  },
+  {
+    "username": "admin",
+    "password": "adminpassword"
+  },
+  {
+    "username": "wrong",
+    "password": "right"
+  },
+  {
+    "username": "udamy",
+    "password": "pryn"
+  },
+  {
+    "username": "timothy",
+    "password": "timothy"
+  },
+  {
+    "username": "stacy",
+    "password": "stacy"
   }
 ]
