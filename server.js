@@ -1,32 +1,22 @@
-require('dotenv').config(); // 1. READS all variables from your .env file
+// server.js (The new, clean version)
+
+require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
-const bcrypt = require('bcrypt');
-const { Pool } = require('pg');
+
+// Import our new route files
+const authRoutes = require('./src/routes/authRoutes');
+const adminRoutes = require('./src/routes/adminRoutes');
 
 const app = express();
 const port = 3000;
 
 // ======================================================
-// 1. DATABASE CONNECTION
-// ======================================================
-// UPDATED: Now reads connection details from environment variables
-const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_DATABASE,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-});
-
-// ======================================================
-// 2. MIDDLEWARE
+// 1. MIDDLEWARE
 // ======================================================
 app.use(express.json());
-
-// UPDATED: Now reads the session secret from environment variables
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -35,106 +25,32 @@ app.use(session({
 }));
 
 // ======================================================
-// 3. API ROUTES (The logic inside these routes does not need to change)
+// 2. API ROUTES
 // ======================================================
-
-// --- REGULAR USER API ROUTES ---
-app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await pool.query(
-            "INSERT INTO users (username, password) VALUES ($1, $2)",
-            [username, hashedPassword]
-        );
-        res.status(200).send('User registered successfully.');
-    } catch (err) {
-        if (err.code === '23505') {
-            return res.status(400).send('Username already exists.');
-        }
-        console.error("Error in /register:", err);
-        res.status(500).send('Error registering user.');
-    }
-});
-
-app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-        const result = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
-        const user = result.rows[0];
-        if (user && await bcrypt.compare(password, user.password)) {
-            res.status(200).send('Login successful.');
-        } else {
-            res.status(400).send('Invalid username or password.');
-        }
-    } catch (err) {
-        console.error("Error in /login:", err);
-        res.status(500).send('Server error during login.');
-    }
-});
-
-// --- ADMIN API ROUTES ---
-const ADMIN_USER = { username: 'admin', password: 'adm' }; // Using a stronger password
-
-app.post('/admin/login', (req, res) => {
-    const { username, password } = req.body;
-    if (username === ADMIN_USER.username && password === ADMIN_USER.password) {
-        req.session.isAdmin = true;
-        res.status(200).send('Admin login successful.');
-    } else {
-        res.status(401).send('Invalid admin credentials.');
-    }
-});
-app.post('/admin/logout', (req, res) => { req.session.destroy(() => res.send('Logged out')); });
-function requireAdmin(req, res, next) { if (req.session.isAdmin) { next(); } else { res.status(403).send('Forbidden'); } }
-app.get('/api/admin/status', (req, res) => { res.json({ loggedIn: !!req.session.isAdmin }); });
-
-app.get('/api/users', requireAdmin, async (req, res) => {
-    try {
-        const result = await pool.query("SELECT username FROM users ORDER BY created_at ASC");
-        res.status(200).json(result.rows);
-    } catch (err) {
-        console.error("Error in GET /api/users:", err);
-        res.status(500).send('Server error.');
-    }
-});
-app.delete('/api/users/:username', requireAdmin, async (req, res) => {
-    const { username } = req.params;
-    try {
-        const deleteOp = await pool.query("DELETE FROM users WHERE username = $1", [username]);
-        if (deleteOp.rowCount === 0) return res.status(404).send('User not found.');
-        res.status(200).send(`User '${username}' deleted successfully.`);
-    } catch (err) {
-        console.error("Error in DELETE /api/users:", err);
-        res.status(500).send('Server error.');
-    }
-});
-app.put('/api/users/:username', requireAdmin, async (req, res) => {
-    const { username } = req.params;
-    const { newPassword } = req.body;
-    try {
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        const updateOp = await pool.query(
-            "UPDATE users SET password = $1 WHERE username = $2",
-            [hashedPassword, username]
-        );
-        if (updateOp.rowCount === 0) return res.status(404).send('User not found.');
-        res.status(200).send(`Password for '${username}' updated successfully.`);
-    } catch (err) {
-        console.error("Error in PUT /api/users:", err);
-        res.status(500).send('Server error.');
-    }
-});
+// Tell the app to use the imported route files.
+// Any route starting with '/' will be handled by authRoutes.
+// Any route will also be checked by adminRoutes.
+app.use(authRoutes);
+app.use(adminRoutes);
 
 // ======================================================
-// 4. PAGE SERVING & STATIC FILES
+// 3. PAGE SERVING & STATIC FILES
 // ======================================================
-app.get('/admin', (req, res) => { res.sendFile(path.join(__dirname, 'admin.html')); });
-app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
+// Serve the static frontend files (HTML, CSS, client-side JS)
 app.use(express.static(__dirname));
 
+// Serve the main pages
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+// The root route should be last to act as a catch-all for the main page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 // ======================================================
-// 5. SERVER INITIALIZATION
+// 4. SERVER INITIALIZATION
 // ======================================================
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
