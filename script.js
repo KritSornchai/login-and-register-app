@@ -1,3 +1,9 @@
+//****  1st stage of how data is flown ****// (when registering your account then sends request to server)
+
+//**** 6th or final stage of how data is flown****// (receives the response (status) from authRoutes.js then,
+//  delivers the user feedback bubble)
+
+
 // --- New Feedback Function ---
 const feedbackContainer = document.getElementById('feedback-container');
 

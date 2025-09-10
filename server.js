@@ -1,4 +1,6 @@
-// server.js (The new, clean version)
+//**** 2nd stage of how data is flown ****// (directs request from script.js to either authRoutes or adminRoutes)
+
+
 
 require('dotenv').config();
 

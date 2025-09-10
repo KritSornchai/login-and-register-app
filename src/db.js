@@ -1,4 +1,10 @@
-// src/db.js
+//****  4th stage of how data is flown ****// (receives user's data from authRoutes.js,
+//  then inserts new data to db table)
+
+//**** 5th stage is the postgres database storing user data ****//
+
+
+
 
 const { Pool } = require('pg');
 

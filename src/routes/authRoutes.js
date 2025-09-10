@@ -1,4 +1,10 @@
-// src/routes/authRoutes.js
+//****  3rd stage of how data is flown ****// (actually receives the request then gets to work by 
+// firstly encrypting the user's passwords then sends another request to db.js to insert a new user)
+
+//**** 5th stage of how data is flown ****// (receives response from db whether the insert operation was a success
+// then sends the success status (200) )
+
+
 
 const express = require('express');
 const bcrypt = require('bcrypt');
